@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "counts": {
+    "wiki_tables": 15316,
+    "wiki_columns": 68522,
+    "wiki_rows": 241435,
+    "wiki_cells": 1081904,
+    "cell_links": 676653,
+    "column_links": 2466
+  },
+  "sampled_tables": 41,
+  "database_bytes": 264552448,
+  "within_700MB": true
+}

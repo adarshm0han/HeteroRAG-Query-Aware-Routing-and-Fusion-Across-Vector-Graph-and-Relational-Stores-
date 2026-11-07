@@ -1,0 +1,14 @@
+{
+  "rag_reader": {
+    "remote_select": true,
+    "tls": true,
+    "writes_denied": true,
+    "tables": 15316
+  },
+  "team_reader": {
+    "remote_select": true,
+    "tls": true,
+    "writes_denied": true,
+    "tables": 15316
+  }
+}

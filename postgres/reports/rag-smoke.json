@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "role": "rag_reader",
+  "returned_rows": 2,
+  "tls": true,
+  "stable_table_id": true,
+  "structured_cells": true
+}

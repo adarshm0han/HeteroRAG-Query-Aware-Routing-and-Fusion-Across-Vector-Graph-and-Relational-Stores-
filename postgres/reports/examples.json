@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "query_result_counts": [
+    20,
+    20,
+    2,
+    4,
+    10
+  ],
+  "numeric_ranking": [
+    "Emmitt Smith",
+    "Walter Payton"
+  ]
+}

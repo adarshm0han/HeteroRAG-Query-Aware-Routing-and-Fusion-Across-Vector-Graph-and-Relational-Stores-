@@ -1,0 +1,16 @@
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+.local/
+data/
+__pycache__/
+.pytest_cache/
+*.pyc
+*.log
+*.dump
+*.backup
+*.zip
+*.partial
+.DS_Store

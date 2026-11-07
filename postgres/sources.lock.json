@@ -1,0 +1,12 @@
+{
+  "questions": {
+    "repository": "wenhuchen/HybridQA",
+    "commit": "db22fda8c5951438fade3c69d75b350335ba93b3",
+    "archive_sha256": "fb94e44c12f9f91b75e7743c119b70f131d12d67033f2eaafd4e280836a039c7"
+  },
+  "corpus": {
+    "repository": "wenhuchen/WikiTables-WithLinks",
+    "commit": "dc066e1a6d5281511d8b73a6107d5ad2824cc2b2",
+    "archive_sha256": "6d4bac29d4a72bb387230ea7de596d4a8e4965528a2997c9d5f2b13d017c8244"
+  }
+}
