@@ -14,7 +14,7 @@ Embeds HybridQA's hyperlinked Wikipedia passages locally and serves them from a 
 ## Corpus and model
 
 - Source: `WikiTables-WithLinks/request_tok` at revision `dc066e1a`, the passage text behind every `/wiki/...` link in the HybridQA tables.
-- 512,670 table-to-passage links dedupe to **286,270 unique passages** (median 120 words, p99 411). One passage = one vector; no chunking, so record identity matches HybridQA's gold passage links.
+- 512,670 table-to-passage links dedupe to **286,267 unique non-empty passages** (median 120 words, p99 411). One passage = one vector; no chunking, so record identity matches HybridQA's gold passage links.
 - Embedding model: `BAAI/bge-small-en-v1.5` (384-d, cosine, run locally — free). Passages are embedded as `"{title}. {text}"`; queries get the bge query instruction (handled by `retriever.py`).
 - Size: 286K × 384 × 4 B ≈ 440 MB of vectors plus ~190 MB of passage text.
 
@@ -43,9 +43,11 @@ Requires Python 3.10–3.12. Run from this `vector/` directory.
 python -m pip install -r requirements.txt
 cp .env.example .env            # add the Pinecone API key; never commit it
 python pipeline.py download
-python pipeline.py embed        # ~286K passages; uses CUDA/MPS when available
+python pipeline.py embed        # uses CUDA/MPS when available; resumes from data/embedding_chunks/
 python pipeline.py upload
 python pipeline.py verify
 ```
+
+On Apple Silicon the MPS backend ran out of memory on the full corpus; `python pipeline.py embed --device cpu` finished all 286,267 passages in 28 minutes on an M-series CPU.
 
 `data/embeddings.npy` + `data/passages.parquet` (row i ↔ vector i) can also back a local FAISS index for offline experiments.

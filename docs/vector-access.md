@@ -1,6 +1,6 @@
 # Querying the shared Pinecone passage index
 
-The index `hybridqa-passages` is already seeded with all 286,270 HybridQA passages. You only need the API key, shared privately by the index owner (Vaibav). Put it in `vector/.env` (ignored by Git), using `vector/.env.example` as the template. Never post the key in issues, logs, screenshots, or pull requests.
+The index `hybridqa-passages` is already seeded with all 286,267 HybridQA passages. You only need the API key, shared privately by the index owner (Vaibav). Put it in `vector/.env` (ignored by Git), using `vector/.env.example` as the template. Never post the key in issues, logs, screenshots, or pull requests.
 
 ```bash
 cd vector

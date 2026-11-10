@@ -27,6 +27,8 @@ REQUEST_TOK = DATA / 'WikiTables-WithLinks' / 'request_tok'
 EMBEDDINGS = DATA / 'embeddings.npy'
 PASSAGES = DATA / 'passages.parquet'
 CHECKPOINT = DATA / 'upload_checkpoint.json'
+CHUNKS = DATA / 'embedding_chunks'
+EMBED_CHUNK = 8192
 
 MODEL = 'BAAI/bge-small-en-v1.5'
 DIM = 384
@@ -57,6 +59,14 @@ def pick_device():
     if torch.backends.mps.is_available():
         return 'mps'
     return 'cpu'
+
+
+def empty_device_cache(device):
+    import torch
+    if device == 'mps':
+        torch.mps.empty_cache()
+    elif device == 'cuda':
+        torch.cuda.empty_cache()
 
 
 def load_passages(request_tok_dir=REQUEST_TOK):
@@ -110,13 +120,20 @@ def cmd_embed(args):
     print(f'{len(passages)} unique passages; embedding with {MODEL} on {device}')
     model = SentenceTransformer(MODEL, device=device)
     # Title is prepended so short passages still carry the entity name.
-    emb = model.encode(
-        [f"{p['title']}. {p['text']}" for p in passages],
-        batch_size=args.batch_size,
-        normalize_embeddings=True,
-        show_progress_bar=True,
-        convert_to_numpy=True,
-    ).astype(np.float32)
+    docs = [f"{p['title']}. {p['text']}" for p in passages]
+    # Encode in chunks saved to disk: bounds GPU memory (MPS otherwise OOMs on the
+    # full corpus) and lets a crashed run resume.
+    CHUNKS.mkdir(exist_ok=True)
+    chunks = []
+    for start in tqdm(range(0, len(docs), EMBED_CHUNK), desc='chunks'):
+        path = CHUNKS / f'{start:07d}_{min(start + EMBED_CHUNK, len(docs)):07d}.npy'
+        if not path.exists():
+            emb = model.encode(docs[start:start + EMBED_CHUNK], batch_size=args.batch_size,
+                               normalize_embeddings=True, convert_to_numpy=True)
+            np.save(path, emb.astype(np.float32))
+            empty_device_cache(device)
+        chunks.append(np.load(path))
+    emb = np.concatenate(chunks)
     np.save(EMBEDDINGS, emb)
     pq.write_table(pa.Table.from_pylist(passages), PASSAGES)
     print(f'wrote {emb.shape} to {EMBEDDINGS.name} and {PASSAGES.name}')
@@ -171,7 +188,7 @@ def main():
     sub.add_parser('download').set_defaults(func=cmd_download)
     embed = sub.add_parser('embed')
     embed.add_argument('--limit', type=int)
-    embed.add_argument('--batch-size', type=int, default=128)
+    embed.add_argument('--batch-size', type=int, default=64)
     embed.add_argument('--device', help='cuda / mps / cpu (auto if omitted)')
     embed.set_defaults(func=cmd_embed)
     upload = sub.add_parser('upload')
